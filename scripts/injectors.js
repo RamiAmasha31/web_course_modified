@@ -15,10 +15,24 @@ const renderCards = (data, type) => {
 
     // Clear existing content
     cardContainer.innerHTML = '';
+    switch (type) {
+        case 'dishes_menu_item':
+            cardContainer.innerHTML = '<h2 class="text-3xl font-bold mb-4 text-center">Menu - Dishes Section</h2>';
+            break;
+        case 'drinks_menu_item':
+            cardContainer.innerHTML = '<h2 class="text-3xl font-bold mb-4 text-center">Menu - Drinks Section</h2>';
+            break;   
+        case 'alcohol_menu_item':
+            cardContainer.innerHTML = '<h2 class="text-3xl font-bold mb-4 text-center">Menu - Alcohol Section</h2>';
+            break;
+        default:
+            break;
+    }
 
     // Create wrapper div
     const wrapperDiv = document.createElement('div');
     wrapperDiv.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6';
+    
     
     // Append cards to the wrapper div
     data.forEach(item => {
@@ -80,7 +94,24 @@ function injectAboutUsData(data) {
     aboutUsSection.appendChild(flexContainer);
 }
 
+function showCustomAlert(message) {
+    const modal = document.getElementById('customAlert');
+    const overlay = document.getElementById('overlay');
 
+    modal.querySelector('p').textContent = message;
+
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+
+    document.getElementById('closeAlert').addEventListener('click', function() {
+      modal.style.display = 'none';
+      overlay.style.display = 'none';
+    });
+  }
+
+  // Usage example
+  // Call this function instead of alert()
+  
 
 function injectReservationForm(reservationsData){
         // Create and inject elements into the reservations section
@@ -166,8 +197,8 @@ function injectReservationForm(reservationsData){
                                 
                                     // Check if the form data matches any entry in the JSON file
                                     if (isFormDataInJsonFile(formData, jsonFile)) {
-                                        alert('Form data already exists in the reservations.json file!');
-                                        // You can handle it as needed, e.g., show a message or prevent submission
+                                       // alert('Form data already exists in the reservations.json file!');
+                                        showCustomAlert('Form data already exists in the reservations.json file!');
                                     } else {
                                         // Add the form data to the JSON file
                                         jsonFile.push(formData);
@@ -175,12 +206,14 @@ function injectReservationForm(reservationsData){
                                         // Save the updated data back to localStorage
                                         localStorage.setItem('reservationsData', JSON.stringify(jsonFile));
                                 
-                                        alert('Form data added to the reservations.json file!');
+                                        showCustomAlert('Form data added to the reservations.json file!');
+                                        
                                         // You can handle form submission or any other actions
                                     }
                                 } catch (error) {
                                     console.error('Error fetching or updating reservations.json:', error);
                                 }
+                                form.reset();
                                                         // Function to check if form data exists in the JSON file
                                                         function isFormDataInJsonFile(formData, jsonFile) {
                                                             return jsonFile.some(entry => JSON.stringify(entry) === JSON.stringify(formData));
@@ -345,28 +378,69 @@ function injectPrivateEvents(privateEventsData) {
     });
 
 
-    // Add an event listener to the form
-    form.addEventListener('submit', function (event) {
-        event.preventDefault(); // Prevent the default form submission behavior
+// Add an event listener to the form
+form.addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission behavior
 
-        // Collect all form field values
-        const formData = {};
-        const formElements = form.elements;
+    // Collect all form field values
+    const formData = {};
+    const formElements = form.elements;
 
-        for (let i = 0; i < formElements.length; i++) {
-            const element = formElements[i];
-            if (element.tagName !== 'BUTTON') {
-                formData[element.name] = element.value;
-            }
+    for (let i = 0; i < formElements.length; i++) {
+        const element = formElements[i];
+        if (element.tagName !== 'BUTTON') {
+            formData[element.name] = element.value;
         }
+    }
 
-        // Convert the form data to JSON
-        const formDataJSON = JSON.stringify(formData);
+    // Convert the form data to JSON
+    const formDataJSON = JSON.stringify(formData);
 
-        // Log the JSON data (you can modify this part based on your needs)
-        console.log('Form Data JSON:', formDataJSON);
+    // Log the JSON data (you can modify this part based on your needs)
+    console.log('Form Data JSON:', formDataJSON);
 
-        // Perform other actions with the form data or send it to your server
+    try {
+        // Fetch the existing data from localStorage
+        const storedData = localStorage.getItem('privateEventsData');
+        const jsonFile = storedData ? JSON.parse(storedData) : [];
+
+        // Check if the form data matches any entry in the JSON file
+        if (isFormDataInJsonFile(formData, jsonFile)) {
+            showCustomAlert('Form data already exists in the privateEvents.json file!');
+            // You can handle it as needed, e.g., show a message or prevent submission
+        } else {
+            // Add the form data to the JSON file
+            jsonFile.push(formData);
+
+            // Save the updated data back to localStorage
+            localStorage.setItem('PrivateEventData', JSON.stringify(jsonFile));
+
+            showCustomAlert('Form data added to the privateEvents.json file!');
+            // You can handle form submission or any other actions
+
+            // Reset the form after successful submission
+            form.reset();
+        }
+    } catch (error) {
+        console.error('Error fetching or updating reservations.json:', error);
+    }
+
+    // Function to check if form data exists in the JSON file
+    function isFormDataInJsonFile(formData, jsonFile) {
+        return jsonFile.some(entry => JSON.stringify(entry) === JSON.stringify(formData));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     });
 
     form.appendChild(submitButton);
@@ -378,12 +452,13 @@ function injectPrivateEvents(privateEventsData) {
     inquiryMessage.textContent = "For inquiries about hosting private events or customizing your experience, feel free to reach out to our events team. We look forward to creating unforgettable moments with you.";
 
     privateEventsSection.appendChild(inquiryMessage);
-}
-    // Function to check if all required fields are filled
-    function areRequiredFieldsFilled() {
+       // Function to check if all required fields are filled
+       function areRequiredFieldsFilled() {
         const requiredFields = form.querySelectorAll('[required]');
         return Array.from(requiredFields).every(field => field.value.trim() !== '');
     }
+}
+ 
 
 // Helper function to create a label
 function createLabel(forAttribute, text) {

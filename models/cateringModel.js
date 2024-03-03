@@ -18,7 +18,7 @@ const cateringData = {
         {
             title: "Customized Package",
             description: "Tailored to your specific preferences and event requirements.",
-            price: "Custom Quote",
+            price: "350-450",
             imgSrc: "images/catering/image3.jpeg"
         }
     ],

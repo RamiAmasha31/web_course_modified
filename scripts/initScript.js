@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         i.style.display = 'none';
                     } else {
                         i.style.display = 'flex';
-                        i.style.color = 'red';
+                        i.style.color = 'gray';
                     }
                 });
             } else {
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const anchorTags = document.querySelectorAll('a');
     anchorTags.forEach(anchor => {
         anchor.addEventListener('click', function (event) {
-            event.preventDefault();
+            //event.preventDefault();
             const sectionId = this.getAttribute('href').substring(1);
             toggleSection(sectionId);  // Toggle the selected section
             scrollToTop();  // Scroll to the top
