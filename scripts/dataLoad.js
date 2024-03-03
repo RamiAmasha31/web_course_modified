@@ -13,13 +13,13 @@ export function db_load(){
                     imgSrc: item.imgSrc,
                 }));
                 switch (path) {
-                    case 'https://github.com/RamiAmasha31/web_course_modified/blob/main/data/dishes.json':
+                    case '../data/dishes.json':
                             renderCards(transformedData, 'dishes_menu_item');
                             break;
-                     case 'https://github.com/RamiAmasha31/web_course_modified/blob/main/data/drinks.json':
+                     case '../data/drinks.json':
                             renderCards(transformedData, 'drinks_menu_item');
                             break;
-                    case 'https://github.com/RamiAmasha31/web_course_modified/blob/main/data/alcohol.json':
+                    case '../data/alcohol.json':
                             renderCards(transformedData, 'alcohol_menu_item');                                
                             break;                                
                     default:
@@ -32,15 +32,15 @@ export function db_load(){
             })
             .catch((error) => {
                 console.error("Unable to fetch data:", error);
-                console.error("response is :", response);
+                console.error("response is:", response);
 
                 throw error; // Re-throw the error for further handling if needed
             });
     }
 
-const dishes_path='https://github.com/RamiAmasha31/web_course_modified/blob/main/data/dishes.json';
-const drinks_path='https://github.com/RamiAmasha31/web_course_modified/blob/main/data/drinks.json';
-const alcohol_path='https://github.com/RamiAmasha31/web_course_modified/blob/main/data/alcohol.json';
+const dishes_path='../data/dishes.json';
+const drinks_path='../data/drinks.json';
+const alcohol_path='../data/alcohol.json';
 
 // bring data from databse
 fetchJSONData(dishes_path);
