@@ -10,11 +10,11 @@ import initializeScript from './initScript.js'
 
 initializeScript();
 injectHeroSection(heroData);
-document.addEventListener('DOMContentLoaded', function () {
+
 renderCards(dishesData ,'dishes_menu_item');
 renderCards(drinksData,'drinks_menu_item');
-renderCards(alcoholData),'alcohol_menu_item';}
-);
+renderCards(alcoholData,'alcohol_menu_item');
+
 injectAboutUsData(aboutUsData);
 injectReservationForm(reservationsData);
 injectGalleryData(galleryData);

@@ -9,6 +9,7 @@ const renderCards = (data, type) => {
     // Check if the card container exists
     if (!cardContainer) {
         console.error(`Card container not found for type: ${type}`);
+        console.log(`type: ${type}`,data);
         return;
     }
 
