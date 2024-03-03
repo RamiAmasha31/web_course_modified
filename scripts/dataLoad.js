@@ -18,13 +18,13 @@ export function db_load(){
                     imgSrc: item.imgSrc,
                 }));
                 switch (path) {
-                        case '../data/dishes.json':
+                        case 'web_course_modified/data/dishes.json':
                                 renderCards(transformedData, 'dishes_menu_item');
                                 break;
-                         case '../data/drinks.json':
+                         case 'web_course_modified/data/drinks.json':
                                 renderCards(transformedData, 'drinks_menu_item');
                                 break;
-                        case '../data/alcohol.json':
+                        case 'web_course_modified/data/alcohol.json':
                                 renderCards(transformedData, 'alcohol_menu_item');                                
                                 break;                                
                         default:
@@ -39,9 +39,9 @@ export function db_load(){
             });
     }
 
-const dishes_path='../data/dishes.json';
-const drinks_path='../data/drinks.json';
-const alcohol_path='../data/alcohol.json';
+const dishes_path='web_course_modified/data/dishes.json';
+const drinks_path='web_course_modified/data/drinks.json';
+const alcohol_path='web_course_modified/data/alcohol.json';
 
 // bring data from databse
 fetchJSONData(dishes_path);
