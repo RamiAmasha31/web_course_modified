@@ -32,6 +32,8 @@ export function db_load(){
             })
             .catch((error) => {
                 console.error("Unable to fetch data:", error);
+                console.error("response is :", response);
+
                 throw error; // Re-throw the error for further handling if needed
             });
     }
