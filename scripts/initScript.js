@@ -1,3 +1,6 @@
+
+
+function initializeScript(){
 // Wait for the DOM content to be loaded
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -76,6 +79,17 @@ document.addEventListener('DOMContentLoaded', function () {
     if (mobileMenuContainer) {
         mobileMenuContainer.addEventListener('click', handleMobileMenuBtnClick);
     }
+    const mobileMenuBtn = document.getElementById('mobile-menu-button');
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', openMobileMenu);
+    }
+    
+    const ClosemobileMenuBtn = document.getElementById('close-btn');
+    if (ClosemobileMenuBtn) {
+        ClosemobileMenuBtn.addEventListener('click', closeMobileMenu);
+    }
+
+
 
     // Function to close the dropdown
     function closeDropdown() {
@@ -167,3 +181,5 @@ document.addEventListener('DOMContentLoaded', function () {
     // Change image every 5 seconds
     setInterval(changeImage, 5000);
 });
+}
+export default initializeScript;
