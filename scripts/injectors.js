@@ -156,7 +156,7 @@ function injectReservationForm(reservationsData){
                     });
 
                                                     // Display the JSON data in the console (you can modify this part)
-                                                    console.log('Form Data as JSON:', JSON.stringify(formData, null, 2));
+                                console.log('Form Data as JSON:', JSON.stringify(formData, null, 2));
                                 // Fetch the reservations.json file
                                 try {
                                     // Fetch the existing data from localStorage

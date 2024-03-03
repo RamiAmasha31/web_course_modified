@@ -13,13 +13,13 @@ export function db_load(){
                     imgSrc: item.imgSrc,
                 }));
                 switch (path) {
-                    case '../data/dishes.json':
+                    case 'https://github.com/RamiAmasha31/web_course_modified/blob/main/data/dishes.json':
                             renderCards(transformedData, 'dishes_menu_item');
                             break;
-                     case '../data/drinks.json':
+                     case 'https://github.com/RamiAmasha31/web_course_modified/blob/main/data/drinks.json':
                             renderCards(transformedData, 'drinks_menu_item');
                             break;
-                    case '../data/alcohol.json':
+                    case 'https://github.com/RamiAmasha31/web_course_modified/blob/main/data/alcohol.json':
                             renderCards(transformedData, 'alcohol_menu_item');                                
                             break;                                
                     default:
@@ -36,9 +36,9 @@ export function db_load(){
             });
     }
 
-const dishes_path='../data/dishes.json';
-const drinks_path='../data/drinks.json';
-const alcohol_path='../data/alcohol.json';
+const dishes_path='https://github.com/RamiAmasha31/web_course_modified/blob/main/data/dishes.json';
+const drinks_path='https://github.com/RamiAmasha31/web_course_modified/blob/main/data/drinks.json';
+const alcohol_path='https://github.com/RamiAmasha31/web_course_modified/blob/main/data/alcohol.json';
 
 // bring data from databse
 fetchJSONData(dishes_path);
