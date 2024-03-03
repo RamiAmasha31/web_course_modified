@@ -1,3 +1,4 @@
+
 import {injectHeroSection,injectPrivateEvents,injectCaering,injectGalleryData,injectReservationForm,injectAboutUsData,renderCards} from './injectors.js'
 export function db_load(){
     function fetchJSONData(path) {
@@ -38,9 +39,9 @@ export function db_load(){
             });
     }
 
-const dishes_path="../data/dishes.json";
-const drinks_path="../data/drinks.json";
-const alcohol_path="../data/alcohol.json";
+const dishes_path='../data/dishes.json';
+const drinks_path='../data/drinks.json';
+const alcohol_path='../data/alcohol.json';
 
 // bring data from databse
 fetchJSONData(dishes_path);
