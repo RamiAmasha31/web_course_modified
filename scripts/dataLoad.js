@@ -3,12 +3,7 @@ import {injectHeroSection,injectPrivateEvents,injectCaering,injectGalleryData,in
 export function db_load(){
     function fetchJSONData(path) {
         return fetch(path)
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(`HTTP error! Status: ${res.status}`);
-                }
-                return res.json();
-            })
+            .then((response) => response.json()) 
             .then((data) => {
                 // Transform the fetched data into the desired format
                 const transformedData = data.map(item => ({
@@ -18,19 +13,21 @@ export function db_load(){
                     imgSrc: item.imgSrc,
                 }));
                 switch (path) {
-                        case 'web_course_modified/data/dishes.json':
-                                renderCards(transformedData, 'dishes_menu_item');
-                                break;
-                         case 'web_course_modified/data/drinks.json':
-                                renderCards(transformedData, 'drinks_menu_item');
-                                break;
-                        case 'web_course_modified/data/alcohol.json':
-                                renderCards(transformedData, 'alcohol_menu_item');                                
-                                break;                                
-                        default:
-                                break;
-                }
-                
+                    case 'web_course_modified/data/dishes.json':
+                            renderCards(transformedData, 'dishes_menu_item');
+                            break;
+                     case 'web_course_modified/data/drinks.json':
+                            renderCards(transformedData, 'drinks_menu_item');
+                            break;
+                    case 'web_course_modified/data/alcohol.json':
+                            renderCards(transformedData, 'alcohol_menu_item');                                
+                            break;                                
+                    default:
+                            break;
+            }
+            
+
+
                 return transformedData;
             })
             .catch((error) => {
