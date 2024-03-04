@@ -113,133 +113,142 @@ function showCustomAlert(message) {
   // Call this function instead of alert()
   
 
-function injectReservationForm(reservationsData){
-        // Create and inject elements into the reservations section
-        const reservationsSection = document.getElementById('reservations-section');
-    
-        const title = document.createElement('h2');
-        title.className = 'text-3xl font-bold mb-4 text-center';
-        title.textContent = reservationsData.title;
-    
-        const description = document.createElement('p');
-        description.className = 'text-gray-700 mb-4';
-        description.textContent = reservationsData.description;
-    
-        const form = document.createElement('form');
-        form.className = 'max-w-md mx-auto border rounded-md p-6 mb-8 shadow-md text-center';
-    
-        Object.entries(reservationsData.formLabels).forEach(([key, value]) => {
-            const label = document.createElement('label');
-            label.for = `reservation-${key}`;
-            label.className = 'block text-gray-700 text-sm font-bold mb-2';
-            label.textContent = value;
-    
-            const input = document.createElement('input');
-            input.type = key === 'date' ? 'date' : key === 'time' ? 'time' : key === 'partySize' ? 'number' : 'tel';
-            input.id = `reservation-${key}`;
-            input.name = `reservation_${key}`;
-            input.className = 'border rounded-md p-2 mb-4 w-full';
-            input.required = true;
-            if (key === 'partySize') {
-                input.min = 1;
-            }
-            if (key === 'phoneNumber') {
-                input.placeholder = 'Enter your phone number';
-            }
-    
-            form.appendChild(label);
-            form.appendChild(input);
+  function injectReservationForm(reservationsData) {
+    // Create and inject elements into the reservations section
+    const reservationsSection = document.getElementById('reservations-section');
+
+    const title = document.createElement('h2');
+    title.className = 'text-3xl font-bold mb-4 text-center';
+    title.textContent = reservationsData.title;
+
+    const description = document.createElement('p');
+    description.className = 'text-gray-700 mb-4';
+    description.textContent = reservationsData.description;
+
+    const form = document.createElement('form');
+    form.className = 'max-w-md mx-auto border rounded-md p-6 mb-8 shadow-md text-center';
+
+    Object.entries(reservationsData.formLabels).forEach(([key, value]) => {
+        const label = document.createElement('label');
+        label.for = `reservation-${key}`;
+        label.className = 'block text-gray-700 text-sm font-bold mb-2';
+        label.textContent = value;
+
+        const input = document.createElement('input');
+        input.type = key === 'date' ? 'date' : key === 'time' ? 'time' : key === 'partySize' ? 'number' : 'tel';
+        input.id = `reservation-${key}`;
+        input.name = `reservation_${key}`;
+        input.className = 'border rounded-md p-2 mb-4 w-full';
+        input.required = true;
+        if (key === 'partySize') {
+            input.min = 1;
+        }
+        if (key === 'phoneNumber') {
+            input.placeholder = 'Enter your phone number';
+        }
+
+        form.appendChild(label);
+        form.appendChild(input);
+    });
+
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.className = 'bg-blue-500 text-white rounded-md py-2 px-4 hover:bg-blue-600 transition duration-300';
+    submitButton.textContent = reservationsData.buttonText;
+    submitButton.disabled = true; // Initially, disable the button
+
+    // Function to check if all required fields are filled
+    function checkFormValidity() {
+        const isValid = Array.from(form.elements).every(element => {
+            return element.tagName !== 'INPUT' || (element.required && element.value.trim() !== '');
         });
-    
-        const submitButton = document.createElement('button');
-        submitButton.type = 'submit';
-        submitButton.className = 'bg-blue-500 text-white rounded-md py-2 px-4 hover:bg-blue-600 transition duration-300';
-        submitButton.textContent = reservationsData.buttonText;
-                    submitButton.disabled = true; // Initially, disable the button
 
-                // Function to check if all required fields are filled
-                function checkFormValidity() {
-                    const isValid = Array.from(form.elements).every(element => {
-                        return element.tagName !== 'INPUT' || (element.required && element.value.trim() !== '');
-                    });
+        submitButton.disabled = !isValid;
+    }
 
-                    submitButton.disabled = !isValid;
+    // Add an event listener to each input field for change events
+    Array.from(form.elements).forEach(element => {
+        if (element.tagName === 'INPUT') {
+            element.addEventListener('input', checkFormValidity);
+        }
+    });
+
+    // Add an event listener to the form
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+
+        // Create a JSON object to store the form data
+        const formData = {};
+
+        // Iterate over form elements and add them to the formData object
+        Array.from(form.elements).forEach(element => {
+            if (element.tagName === 'INPUT') {
+                formData[element.name] = element.value;
+            }
+        });
+
+        // Display the JSON data in the console (you can modify this part)
+        console.log('Form Data as JSON:', JSON.stringify(formData, null, 2));
+
+        try {
+            // Open or create the IndexedDB database
+            const dbName = 'ReservationsDB';
+            const dbVersion = 1;
+
+            const request = indexedDB.open(dbName, dbVersion);
+
+            request.onupgradeneeded = function (event) {
+                const db = event.target.result;
+
+                // Create an object store (similar to a table in SQL) to store form data
+                if (!db.objectStoreNames.contains('reservations')) {
+                    db.createObjectStore('reservations', { keyPath: 'id', autoIncrement: true });
                 }
+            };
 
-                // Add an event listener to each input field for change events
-                Array.from(form.elements).forEach(element => {
-                    if (element.tagName === 'INPUT') {
-                        element.addEventListener('input', checkFormValidity);
-                    }
-                });
+            request.onsuccess = function (event) {
+                const db = event.target.result;
 
-                // Add an event listener to the form
-                form.addEventListener('submit', async function (event) {
-                    event.preventDefault(); // Prevent the default form submission behavior
+                // Add the form data to the IndexedDB database
+                const transaction = db.transaction(['reservations'], 'readwrite');
+                const objectStore = transaction.objectStore('reservations');
 
-                    // Create a JSON object to store the form data
-                    const formData = {};
+                // Assuming you have a unique identifier for each form submission (e.g., an 'id' property)
+                const formSubmission = { id: Date.now(), data: formData };
+                const addRequest = objectStore.add(formSubmission);
 
-                    // Iterate over form elements and add them to the formData object
-                    Array.from(form.elements).forEach(element => {
-                        if (element.tagName === 'INPUT') {
-                            formData[element.name] = element.value;
-                        }
-                    });
+                addRequest.onsuccess = function () {
+                    showCustomAlert('Form data added to IndexedDB!');
+                    // You can handle form submission or any other actions
 
-                                                    // Display the JSON data in the console (you can modify this part)
-                                console.log('Form Data as JSON:', JSON.stringify(formData, null, 2));
-                                // Fetch the reservations.json file
-                                try {
-                                    // Fetch the existing data from localStorage
-                                    const storedData = localStorage.getItem('reservationsData');
-                                    const jsonFile = storedData ? JSON.parse(storedData) : [];
-                                
-                                    // Check if the form data matches any entry in the JSON file
-                                    if (isFormDataInJsonFile(formData, jsonFile)) {
-                                       // alert('Form data already exists in the reservations.json file!');
-                                        showCustomAlert('Form data already exists in the reservations.json file!');
-                                    } else {
-                                        // Add the form data to the JSON file
-                                        jsonFile.push(formData);
-                                
-                                        // Save the updated data back to localStorage
-                                        localStorage.setItem('reservationsData', JSON.stringify(jsonFile));
-                                
-                                        showCustomAlert('Form data added to the reservations.json file!');
-                                        
-                                        // You can handle form submission or any other actions
-                                    }
-                                } catch (error) {
-                                    console.error('Error fetching or updating reservations.json:', error);
-                                }
-                                form.reset();
-                                                        // Function to check if form data exists in the JSON file
-                                                        function isFormDataInJsonFile(formData, jsonFile) {
-                                                            return jsonFile.some(entry => JSON.stringify(entry) === JSON.stringify(formData));
-                                                        }
+                    // Reset the form after successful submission
+                    form.reset();
+                };
 
+                addRequest.onerror = function () {
+                    console.error('Error adding form data to IndexedDB');
+                };
+            };
 
-                    // You can now send the formData to your server or perform other actions
-                });
+            request.onerror = function () {
+                console.error('Error opening IndexedDB');
+            };
+        } catch (error) {
+            console.error('Error handling IndexedDB:', error);
+        }
+    });
 
-        form.appendChild(submitButton);
-    
-        const confirmationMessage = document.createElement('p');
-        confirmationMessage.className = 'text-gray-700 mb-8';
-        confirmationMessage.textContent = reservationsData.confirmationMessage;
-    
-        reservationsSection.appendChild(title);
-        reservationsSection.appendChild(description);
-        reservationsSection.appendChild(form);
-        reservationsSection.appendChild(confirmationMessage);
+    form.appendChild(submitButton);
 
-            
+    const confirmationMessage = document.createElement('p');
+    confirmationMessage.className = 'text-gray-700 mb-8';
+    confirmationMessage.textContent = reservationsData.confirmationMessage;
 
+    reservationsSection.appendChild(title);
+    reservationsSection.appendChild(description);
+    reservationsSection.appendChild(form);
+    reservationsSection.appendChild(confirmationMessage);
 }
-
-
-
 
 
 
@@ -319,8 +328,6 @@ function injectCaering(cateringData){
     cateringSection.appendChild(cateringPackagesContainer);
 }
 function injectPrivateEvents(privateEventsData) {
-
-
     // Create and inject elements into the private events section
     const privateEventsSection = document.getElementById('private-events-section');
 
@@ -366,10 +373,9 @@ function injectPrivateEvents(privateEventsData) {
     const submitButton = document.createElement('button');
     submitButton.type = 'submit';
     submitButton.className = 'bg-blue-500 text-white rounded-md py-2 px-4';
-        submitButton.textContent = 'Submit Request';
- // Initially, disable the submit button
- submitButton.disabled = true;
-
+    submitButton.textContent = 'Submit Request';
+    // Initially, disable the submit button
+    submitButton.disabled = true;
 
     // Add an event listener to the form
     form.addEventListener('input', function () {
@@ -377,70 +383,70 @@ function injectPrivateEvents(privateEventsData) {
         submitButton.disabled = !areRequiredFieldsFilled();
     });
 
+    // Add an event listener to the form
+    form.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the default form submission behavior
 
-// Add an event listener to the form
-form.addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent the default form submission behavior
+        // Collect all form field values
+        const formData = {};
+        const formElements = form.elements;
 
-    // Collect all form field values
-    const formData = {};
-    const formElements = form.elements;
-
-    for (let i = 0; i < formElements.length; i++) {
-        const element = formElements[i];
-        if (element.tagName !== 'BUTTON') {
-            formData[element.name] = element.value;
+        for (let i = 0; i < formElements.length; i++) {
+            const element = formElements[i];
+            if (element.tagName !== 'BUTTON') {
+                formData[element.name] = element.value;
+            }
         }
-    }
 
-    // Convert the form data to JSON
-    const formDataJSON = JSON.stringify(formData);
+        // Convert the form data to JSON
+        const formDataJSON = JSON.stringify(formData);
 
-    // Log the JSON data (you can modify this part based on your needs)
-    console.log('Form Data JSON:', formDataJSON);
+        try {
+            // Open or create the IndexedDB database
+            const dbName = 'PrivateEventsDB';
+            const dbVersion = 1;
 
-    try {
-        // Fetch the existing data from localStorage
-        const storedData = localStorage.getItem('privateEventsData');
-        const jsonFile = storedData ? JSON.parse(storedData) : [];
+            const request = indexedDB.open(dbName, dbVersion);
 
-        // Check if the form data matches any entry in the JSON file
-        if (isFormDataInJsonFile(formData, jsonFile)) {
-            showCustomAlert('Form data already exists in the privateEvents.json file!');
-            // You can handle it as needed, e.g., show a message or prevent submission
-        } else {
-            // Add the form data to the JSON file
-            jsonFile.push(formData);
+            request.onupgradeneeded = function (event) {
+                const db = event.target.result;
 
-            // Save the updated data back to localStorage
-            localStorage.setItem('PrivateEventData', JSON.stringify(jsonFile));
+                // Create an object store (similar to a table in SQL) to store form data
+                if (!db.objectStoreNames.contains('privateEvents')) {
+                    db.createObjectStore('privateEvents', { keyPath: 'id', autoIncrement: true });
+                }
+            };
 
-            showCustomAlert('Form data added to the privateEvents.json file!');
-            // You can handle form submission or any other actions
+            request.onsuccess = function (event) {
+                const db = event.target.result;
 
-            // Reset the form after successful submission
-            form.reset();
+                // Add the form data to the IndexedDB database
+                const transaction = db.transaction(['privateEvents'], 'readwrite');
+                const objectStore = transaction.objectStore('privateEvents');
+
+                // Assuming you have a unique identifier for each form submission (e.g., an 'id' property)
+                const formSubmission = { id: Date.now(), data: formData };
+                const addRequest = objectStore.add(formSubmission);
+
+                addRequest.onsuccess = function () {
+                    showCustomAlert('Form data added to IndexedDB!');
+                    // You can handle form submission or any other actions
+
+                    // Reset the form after successful submission
+                    form.reset();
+                };
+
+                addRequest.onerror = function () {
+                    console.error('Error adding form data to IndexedDB');
+                };
+            };
+
+            request.onerror = function () {
+                console.error('Error opening IndexedDB');
+            };
+        } catch (error) {
+            console.error('Error handling IndexedDB:', error);
         }
-    } catch (error) {
-        console.error('Error fetching or updating reservations.json:', error);
-    }
-
-    // Function to check if form data exists in the JSON file
-    function isFormDataInJsonFile(formData, jsonFile) {
-        return jsonFile.some(entry => JSON.stringify(entry) === JSON.stringify(formData));
-    }
-
-
-
-
-
-
-
-
-
-
-
-
     });
 
     form.appendChild(submitButton);
@@ -452,13 +458,13 @@ form.addEventListener('submit', function (event) {
     inquiryMessage.textContent = "For inquiries about hosting private events or customizing your experience, feel free to reach out to our events team. We look forward to creating unforgettable moments with you.";
 
     privateEventsSection.appendChild(inquiryMessage);
-       // Function to check if all required fields are filled
-       function areRequiredFieldsFilled() {
+
+    // Function to check if all required fields are filled
+    function areRequiredFieldsFilled() {
         const requiredFields = form.querySelectorAll('[required]');
         return Array.from(requiredFields).every(field => field.value.trim() !== '');
     }
 }
- 
 
 // Helper function to create a label
 function createLabel(forAttribute, text) {
